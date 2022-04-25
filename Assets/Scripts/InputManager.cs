@@ -10,13 +10,18 @@ public class InputManager : MonoBehaviour
     public Vector2 movementInput;
     public Vector2 cameraInput;
     public bool b_input;
+    public bool jump_Input;
 
     public bool rollFlag;
+    public bool jumpFlag;
     public bool sprintFlag;
+
     public float rollInputTimer;
     public float rollEndTimer;
+    public float jumpEndTimer;
     public bool isInteracting;
     public bool isSprinting;
+    public bool isJumping;
 
     public float cameraInputX;
     public float cameraInputY;
@@ -40,6 +45,8 @@ public class InputManager : MonoBehaviour
             playerControls.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
             playerControls.PlayerActions.Roll.started += i => b_input = true;
             playerControls.PlayerActions.Roll.canceled += i => b_input = false;
+            playerControls.PlayerActions.Jump.performed += i => jump_Input = true;
+            playerControls.PlayerActions.Jump.canceled += i => jump_Input = false;
         }
         playerControls.Enable();
     }
@@ -54,13 +61,17 @@ public class InputManager : MonoBehaviour
         HandleIsInteracting();
         HandleMovementInput();
         HandleRollInput();
+        HandleJumpingInput();
     }
 
     public void HandleIsInteracting()
     {
         isInteracting = animatorManager.animator.GetBool("isInteracting");
+        isJumping = animatorManager.animator.GetBool("isJumping");
         if (Time.time > rollEndTimer)
             rollFlag = false;
+        if (Time.time > jumpEndTimer)
+            jumpFlag = false;
         sprintFlag = false;
     }
     
@@ -96,5 +107,14 @@ public class InputManager : MonoBehaviour
             rollInputTimer = 0;
         }
         isSprinting = sprintFlag;
+    }
+
+    private void HandleJumpingInput()
+    {
+        if (jump_Input)
+        {
+            jumpFlag = true;
+            jumpEndTimer = Time.time + 0.3f;
+        }
     }
 }

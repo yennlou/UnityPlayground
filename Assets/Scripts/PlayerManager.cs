@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    AnimatorManager animatorManager;
     InputManager inputManager;
     CameraManager cameraManager;
     PlayerLocomotion playerLocomotion;
 
     private void Awake()
     {
+        animatorManager = GetComponent<AnimatorManager>();
         inputManager = GetComponent<InputManager>();
         cameraManager = FindObjectOfType<CameraManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
@@ -28,5 +30,6 @@ public class PlayerManager : MonoBehaviour
     private void LateUpdate()
     {
         cameraManager.HandleAllCameraMovement();
+        animatorManager.animator.SetBool("isGrounded", playerLocomotion.isGrounded);
     }
 }
