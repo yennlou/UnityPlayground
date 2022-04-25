@@ -6,14 +6,12 @@ public class PlayerManager : MonoBehaviour
 {
     InputManager inputManager;
     CameraManager cameraManager;
-    AnimatorManager animatorManager;
     PlayerLocomotion playerLocomotion;
 
     private void Awake()
     {
         inputManager = GetComponent<InputManager>();
         cameraManager = FindObjectOfType<CameraManager>();
-        animatorManager = GetComponent<AnimatorManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
     }
 

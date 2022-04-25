@@ -11,9 +11,22 @@ public class PlayerLocomotion : MonoBehaviour
     Transform cameraObject;
     public Rigidbody playerRb;
 
+    [Header("Falling")]
+    public float inAirTimer;
+    public float leapingVelocity;
+    public float fallingVelocity;
+    public float rayCastHeightOffset;
+    public LayerMask groundLayer;
+
+    [Header("Movement Flags")]
+    public bool isGrounded;
+
+    [Header("Movement Speeds")]
     public float movementSpeed = 7;
     public float sprintSpeed = 10;
     public float rotationSpeed = 15;
+
+    public float testHeight = 0.3f;
 
     private void Awake()
     {
@@ -25,6 +38,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     public void HandleAllMovement()
     {
+        HandleFallingAndLanding();
         if (inputManager.isInteracting) return;
         HandleMovement();
         HandleRotation();
@@ -88,5 +102,36 @@ public class PlayerLocomotion : MonoBehaviour
             Vector3 movementVelocity = moveDirection * sprintSpeed;
             playerRb.velocity = movementVelocity;
         }
+    }
+
+    private void HandleFallingAndLanding()
+    {
+        RaycastHit hit;
+        Vector3 rayCastOrigin = transform.position;
+        rayCastOrigin.y = rayCastOrigin.y + rayCastHeightOffset;
+        if (!isGrounded)
+        {
+            if (!inputManager.isInteracting)
+            {
+                animatorManager.PlayTargetAnimation("Falling", true);
+            }
+
+            inAirTimer = inAirTimer + Time.deltaTime;
+            playerRb.AddForce(transform.forward * leapingVelocity);
+            playerRb.AddForce(-Vector3.up * fallingVelocity * inAirTimer);
+        }
+        if (Physics.SphereCast(rayCastOrigin, 0.2f, -Vector3.up, out hit, 0.2f, groundLayer))
+        {
+            if (!isGrounded)
+            {
+                animatorManager.PlayTargetAnimation("LandSoft", true);
+            }
+            inAirTimer = 0;
+            isGrounded = true;
+        } else
+        {
+            isGrounded = false;
+        }
+        
     }
 }

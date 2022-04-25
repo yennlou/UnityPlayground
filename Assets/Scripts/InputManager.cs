@@ -33,11 +33,13 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
-        if(playerControls == null)
+        if (playerControls == null)
         {
             playerControls = new PlayerControls();
             playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
             playerControls.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
+            playerControls.PlayerActions.Roll.started += i => b_input = true;
+            playerControls.PlayerActions.Roll.canceled += i => b_input = false;
         }
         playerControls.Enable();
     }
@@ -77,7 +79,6 @@ public class InputManager : MonoBehaviour
 
     private void HandleRollInput()
     {
-        b_input = playerControls.PlayerActions.Roll.phase == UnityEngine.InputSystem.InputActionPhase.Performed;
         if (b_input)
         {
             rollInputTimer += Time.deltaTime;
